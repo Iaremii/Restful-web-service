@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -20,23 +21,24 @@ public class Client {
 
 	@Size(min = 2, message = "Name should be have atleast2 characters")
 	private String firstName;
+	@NotEmpty
 	private String lastName;
-	// regex
+	@Pattern(regexp =	".+\\@.+\\..+", message = "email format xxxx@yyyy.zzz")
 	private String email;
 	@Pattern(regexp =	"(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{3}", message = "phone format (xxx-xxx-xxx)")
 	private String phoneNumber;
+	@NotEmpty
 	private String company;
 
 	@OneToMany(mappedBy = "client")
 	private List<Commission> commissions;
 
 	public Client() {
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public Client(Integer id, String firstName, String lastName, String email, String phoneNumber, String company) {
+	public Client(String firstName, String lastName, String email, String phoneNumber, String company) {
 		super();
-		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
