@@ -26,9 +26,9 @@ public class Project {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Project(Integer id,String name, String description, double price) {
+	public Project(String name, String description, double price) {
 		super();
-		this.id = id;
+		
 		this.name = name;
 		this.description = description;
 		this.price = price;

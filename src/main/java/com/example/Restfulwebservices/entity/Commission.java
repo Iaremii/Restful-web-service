@@ -1,14 +1,15 @@
 package com.example.Restfulwebservices.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.validation.constraints.PastOrPresent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,10 +26,12 @@ public class Commission {
 	private double budget;
 
 	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="client_id")
 	@JsonIgnore
 	private Client client;
 	
 	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="project_id")
 	@JsonIgnore
 	private Project project;
 
@@ -93,7 +96,6 @@ public class Commission {
 	public void setProject(Project project) {
 		this.project = project;
 	}
-
 	@Override
 	public String toString() {
 		return "Order [id=" + id + ", orderDate=" + orderDate + ", category=" + category + ", budget=" + budget + "]";

@@ -1,6 +1,5 @@
 package com.example.Restfulwebservices.controller;
 
-
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -25,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.Restfulwebservices.entity.Client;
+import com.example.Restfulwebservices.entity.Commission;
+import com.example.Restfulwebservices.entity.Project;
 import com.example.Restfulwebservices.exception.ClientNotFountException;
 import com.example.Restfulwebservices.repository.ClientRepository;
 import com.example.Restfulwebservices.repository.CommissionRepository;
@@ -40,47 +41,44 @@ public class JPAController {
 	private ProjectRepository projectRepository;
 	@Autowired
 	private CommissionRepository commissionRepository;
-	
+
 	@GetMapping("/clients")
 	public List<Client> retrieveAllClients() {
 		return clientRepository.findAll();
 	}
-	
+
 	@GetMapping("/clients/{id}")
 	public Resource<Client> retrieveClient(@PathVariable int id) {
 		Optional<Client> client = clientRepository.findById(id);
-		if (!client.isPresent()   ) {
+		if (!client.isPresent()) {
 			throw new ClientNotFountException("id-" + id);
 		}
 		Resource<Client> resource = new Resource<Client>(client.get());
-		
-		//HATEOAS
-		ControllerLinkBuilder linkTo = 
-				linkTo(methodOn(this.getClass()).retrieveAllClients());
-		
+
+		// HATEOAS
+		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllClients());
+
 		resource.add(linkTo.withRel("all-clients"));
-		
-		
-		
+
 		return resource;
 	}
-	
+
 	@PostMapping("/clients")
-	public ResponseEntity <Object> saveClients(@Valid @RequestBody Client client) {
+	public ResponseEntity<Object> saveClients(@Valid @RequestBody Client client) {
 		Client clientSaved = clientRepository.save(client);
-		
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(clientSaved.getId())
-				.toUri();
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+				.buildAndExpand(clientSaved.getId()).toUri();
 
 		return ResponseEntity.created(location).build();
 	}
-	
+
 	@DeleteMapping("/clients/{id}")
 	public void deleteClients(@PathVariable int id) {
 		clientRepository.deleteById(id);
-		
+
 	}
-	
+
 	@PutMapping("/clients/{id}")
 	public void updateClients(@PathVariable int id, @RequestBody Client client) {
 		Client newClient = clientRepository.getOne(id);
@@ -88,10 +86,71 @@ public class JPAController {
 		newClient.setLastName(client.getLastName());
 		newClient.setCompany(client.getCompany());
 		newClient.setEmail(client.getEmail());
-		newClient.setPhoneNumber(client.getPhoneNumber());;
+		newClient.setPhoneNumber(client.getPhoneNumber());
+		;
 		clientRepository.save(newClient);
 	}
 
-	
+	@GetMapping("/clients/{id}/commissions")
+	public List<Commission> retrieveAllClients(@PathVariable int id) {
+		Optional<Client> clientOptinal = clientRepository.findById(id);
+		if (!clientOptinal.isPresent()) {
+			throw new ClientNotFountException("id-" + id);
+		}
+
+		return clientOptinal.get().getCommissions();
+
+	}
+
+	/*@PostMapping("/clients/{id}/commissions")
+	public ResponseEntity<Object> createCommission(@PathVariable int id, @RequestBody Commission commission) {
+		Optional<Client> clientOptinal = clientRepository.findById(id);
+		if (!clientOptinal.isPresent()) {
+			throw new ClientNotFountException("id-" + id);
+		}
+		Client theClient = clientOptinal.get();
+		// commission.setUser(user);
+		commission.setClient(theClient);
+		commissionRepository.save(commission);
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(commission.getId())
+				.toUri();
+
+		return ResponseEntity.created(location).build();
+
+	}*/
+
+	@GetMapping("/projects")
+	public List<Project> retrieveAllProjects() {
+		return projectRepository.findAll();
+	}
+
+	@GetMapping("/commissions")
+	public List<Commission> CommissionCommissions() {
+		return commissionRepository.findAll();
+	}
+
+	@PostMapping("/commissions/client={idClient}&project={idProject}")
+	public ResponseEntity<Object> createCommission(@PathVariable int idClient, @PathVariable int idProject,
+			@RequestBody Commission commission) {
+		Optional<Client> clientOptinal = clientRepository.findById(idClient);
+		Optional<Project> projectOptinal = projectRepository.findById(idProject);
+		if (!clientOptinal.isPresent() ) {
+			throw new ClientNotFountException("id-" + idClient);
+			//add to project not found
+		}
+		Client theClient = clientOptinal.get();
+		Project theProject = projectOptinal.get();
+
+		commission.setClient(theClient);
+		commission.setProject(theProject);
+		commissionRepository.save(commission);
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(commission.getId())
+				.toUri();
+
+		return ResponseEntity.created(location).build();
+
+	}
 
 }
