@@ -6,7 +6,7 @@ insert into project values(2, 'some text', 'Java', 3000);
 insert into project values(3, 'some text', 'DashBoards', 4000);
 
 insert into commission values(1, 15000, 'CRM', sysdate(),1,1);
-insert into commission values(2, 11000, 'boards', sysdate(),1,3);
+insert into commission values(2, 11000, 'Boards', sysdate(),1,3);
 insert into commission values(3, 1000, 'Java', sysdate(),2,2);
 
 

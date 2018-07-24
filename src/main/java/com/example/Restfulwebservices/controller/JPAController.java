@@ -27,6 +27,7 @@ import com.example.Restfulwebservices.entity.Client;
 import com.example.Restfulwebservices.entity.Commission;
 import com.example.Restfulwebservices.entity.Project;
 import com.example.Restfulwebservices.exception.ClientNotFountException;
+import com.example.Restfulwebservices.exception.ProjectNotFountException;
 import com.example.Restfulwebservices.repository.ClientRepository;
 import com.example.Restfulwebservices.repository.CommissionRepository;
 import com.example.Restfulwebservices.repository.ProjectRepository;
@@ -42,6 +43,12 @@ public class JPAController {
 	@Autowired
 	private CommissionRepository commissionRepository;
 
+	//zamiast elasticSearch
+	@GetMapping("/clients/email={email}")
+	public Client byEmail(@PathVariable String email){ 
+		return clientRepository.findByEmailAddress(email);
+	}
+	
 	@GetMapping("/clients")
 	public List<Client> retrieveAllClients() {
 		return clientRepository.findAll();
@@ -102,24 +109,6 @@ public class JPAController {
 
 	}
 
-	/*@PostMapping("/clients/{id}/commissions")
-	public ResponseEntity<Object> createCommission(@PathVariable int id, @RequestBody Commission commission) {
-		Optional<Client> clientOptinal = clientRepository.findById(id);
-		if (!clientOptinal.isPresent()) {
-			throw new ClientNotFountException("id-" + id);
-		}
-		Client theClient = clientOptinal.get();
-		// commission.setUser(user);
-		commission.setClient(theClient);
-		commissionRepository.save(commission);
-
-		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(commission.getId())
-				.toUri();
-
-		return ResponseEntity.created(location).build();
-
-	}*/
-
 	@GetMapping("/projects")
 	public List<Project> retrieveAllProjects() {
 		return projectRepository.findAll();
@@ -137,7 +126,9 @@ public class JPAController {
 		Optional<Project> projectOptinal = projectRepository.findById(idProject);
 		if (!clientOptinal.isPresent() ) {
 			throw new ClientNotFountException("id-" + idClient);
-			//add to project not found
+		}
+		if(!projectOptinal.isPresent()) {
+			throw new ProjectNotFountException("id-" + idProject);
 		}
 		Client theClient = clientOptinal.get();
 		Project theProject = projectOptinal.get();
